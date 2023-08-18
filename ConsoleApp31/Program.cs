@@ -86,7 +86,7 @@ namespace ConsoleApp31
             }
             public string Name
             {
-                get { return name; }
+                get { return name; }//1
             }
         }
        
