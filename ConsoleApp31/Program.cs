@@ -33,6 +33,31 @@ namespace ConsoleApp31
                     break;
             }
         }
+        static void Journey()
+        {
+            Console.WriteLine("-------------------------------");
+
+            Random random = new Random();
+            byte randomEvent = (byte)random.Next(1, 4);
+            if (randomEvent == 3)
+            {
+                Console.WriteLine("Ти нікого не зустрів.");
+                Console.WriteLine("-------------------------------");
+            }
+            else
+            {
+                byte randomAmount = (byte)random.Next(1, 4);
+                byte randomDistance = (byte)random.Next(1, 3);
+                Console.WriteLine("{0},{1},{2}", randomEvent, randomAmount, randomDistance);
+                string[] Events = { "Сліпі пси", "Бандюгани" };
+                string[] Amount = { "Символічно", "Декілька", "Середня кількість", "Багато" };
+                string[] Distance = { "Близько", "Неподалеку", "Далеко" };
+                Console.WriteLine($"Ти зустрів когось:\n{Events[random.Next(0, 3)]}\n{Amount[random.Next(0, 3)]}\n{Distance[random.Next(0, 2)]}");
+                Console.WriteLine("-------------------------------");
+            }
+
+
+        }
         static void CanBuyWeapon(Weapon w, Stalker s)
         {
             if (s.Money >= w.BuyPrice)
@@ -40,10 +65,7 @@ namespace ConsoleApp31
                 Console.WriteLine("[УСПІХ] Відмінна зброя, ти не пожалкуєш, сталкер!");
                 s.SetCurrentWeapon = w;
             }
-            else
-            {
-                Console.WriteLine("[НЕВДАЧА] Недостатньо коштів.");
-            }
+            else Console.WriteLine("[НЕВДАЧА] Недостатньо коштів.");
         }
         //public Weapon w0 = new Weapon("fist", 5, 10, 0, 0, 0);
         //public Weapon w1 = new Weapon("pm", 12, 13, 5, 8, 1500);
@@ -63,7 +85,28 @@ namespace ConsoleApp31
                                                                                         List<Weapon> weapons = new List<Weapon>() { w1, w2, w3 };
             Stalker l1 = new Stalker("vasya", 2500, "loner");
             l1.currentWeapon = w0;
-            TraderContact(weapons,l1);
+            int x;
+            do
+            {
+                Console.WriteLine("-------------------------------");
+                Console.WriteLine("Шо робим?\n1.Йдем до Сидора\n2.Шукаєм пригоди на свою голову\n10.Нафіг зону...");
+                x = int.Parse(Console.ReadLine());
+                switch (x)
+                {
+                    case 1:
+                        TraderContact(weapons, l1);
+                        break;
+                    case 2:
+                        Journey();
+                        break;
+                    case 10:
+                        break;
+                    default:
+                        Console.WriteLine("бб");
+                        break;
+                }
+            } while (x != 10);
+            
         }
     public class Stalker
         {
