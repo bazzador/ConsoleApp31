@@ -33,7 +33,7 @@ namespace ConsoleApp31
                     break;
             }
         }
-        static void Journey()
+        static void Journey(Stalker stalker)
         {
             Console.WriteLine("-------------------------------");
 
@@ -52,11 +52,92 @@ namespace ConsoleApp31
                 string[] Events = { "Сліпі пси", "Бандюгани" };
                 string[] Amount = { "Символічно", "Декілька", "Середня кількість", "Багато" };
                 string[] Distance = { "Близько", "Неподалеку", "Далеко" };
-                Console.WriteLine($"Ти зустрів когось:\n{Events[random.Next(0, 3)]}\n{Amount[random.Next(0, 3)]}\n{Distance[random.Next(0, 2)]}");
-                Console.WriteLine("-------------------------------");
+                Console.WriteLine($"Ти зустрів когось:\n{Events[0]}\n{Amount[random.Next(0, 3)]}\n{Distance[random.Next(0, 2)]}");
+                Console.WriteLine("Що робимо???\n1.Стріляємо!.\n2.Тікаємо!");
+                int x;
+                do
+                {
+                    x = int.Parse(Console.ReadLine());
+                    switch (x)
+                    {
+                        case 1:
+                            InitialBattle(randomEvent, /*randomAmount,*/ randomDistance, stalker);
+                            break;
+                        case 2: break;
+                        default:
+                            Console.WriteLine("Нормально вибери!");
+                            break;
+                    }
+                    Console.WriteLine("-------------------------------");
+                } while (x > 2);
+
             }
+        }
+        static void InitialBattle(byte Event, /*byte Amount,*/ byte Distance, Stalker stalker)
+        {
+            Random random = new Random();
+            int Tiles = 9;
+            //switch (Event)
+            //{
+            //    case 0: 
+                    Enemy blindDog = new Enemy(40, 20, 0, 3);
+                    Distance = (byte)(Distance * 3 + 3);
+                    Console.WriteLine($"Собака на відстані {Distance} тайлів: що робимо?\n1.Стріляємо\n2.Наступаємо.\n3.Відступаємо\n4.Тікаємо з поля бою[Відстань>10]\n9.Закінчити хід.");
+                    Console.WriteLine("----");
+                    Console.WriteLine($"КРОКІВ ЗАЛИШИЛОСЯ: {Tiles}");
+                    int x; bool canEscape = false;
+            do
+            {
+                x = int.Parse(Console.ReadLine());
+                switch (x)
+                {
+                    case 1:
+                        if (Tiles >= 4 && Distance < stalker.currentWeapon.Distance)
+                        {
+                            if (random.Next(1, 20) <= stalker.currentWeapon.Accuracy)
+                            {
 
+                                Console.WriteLine($"[УСПІШНО] Влучив!   {random}/20");
+                                blindDog.SuccecfullHit(stalker.currentWeapon.Damage);
+                                Console.WriteLine(blindDog.Health);
+                                if (blindDog.Health < 0)
+                                {
+                                    Console.WriteLine("Ворог мертвий!");
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine($"[НЕВДАЧА] Куля не влучила в ціль.    {random}/20");
+                            }
+                            Tiles -= 4;
+                        }
+                        break;
+                    case 2:
+                        if (Tiles >= 2) Distance -= 1; Console.WriteLine($"Тепер ми на крок ближче до ворога! {Distance}");
+                        break;
+                    case 3:
+                        if (Tiles >= 2) Distance += 1; Console.WriteLine($"Тепер ми на крок далі від ворога! {Distance}");
+                        break;
+                    case 4:
+                        if (Distance > 10)
+                        {
+                            Console.WriteLine("[УСПІШНО] Вам вдалося втекти.");
+                            canEscape = true;
+                        }
+                        else Console.WriteLine($"[НЕДВАЧА] Ворог ще близько.");
+                        break;
+                    case 5: Tiles = 9;
+                        break;
+                    default:
+                        Console.WriteLine("Спробуй знову написати.");
+                        break;
+                }
+            } while (blindDog.Health > 0 || canEscape == true || x>5 || x<1); 
 
+                //    break;
+                //case 1: 
+            //}
         }
         static void CanBuyWeapon(Weapon w, Stalker s)
         {
@@ -78,11 +159,11 @@ namespace ConsoleApp31
         //}
         static void Main(string[] args)
         {
-                                                                                        Weapon w0 = new Weapon("fist", 5, 10, 0, 0, 0);
-                                                                                        Weapon w1 = new Weapon("pm", 12, 13, 5, 8, 1500);
-                                                                                        Weapon w2 = new Weapon("tt", 21, 13, 5, 10, 2500);
-                                                                                        Weapon w3 = new Weapon("obrez", 30, 12, 2, 2, 3000);
-                                                                                        List<Weapon> weapons = new List<Weapon>() { w1, w2, w3 };
+            Weapon w0 = new Weapon("fist", 5, 10, 0, 0, 0);
+            Weapon w1 = new Weapon("pm", 12, 13, 5, 8, 1500);
+            Weapon w2 = new Weapon("tt", 21, 13, 5, 10, 2500);
+            Weapon w3 = new Weapon("obrez", 30, 12, 2, 2, 3000);
+            List<Weapon> weapons = new List<Weapon>() { w1, w2, w3 };
             Stalker l1 = new Stalker("vasya", 2500, "loner");
             l1.currentWeapon = w0;
             int x;
@@ -97,7 +178,7 @@ namespace ConsoleApp31
                         TraderContact(weapons, l1);
                         break;
                     case 2:
-                        Journey();
+                        Journey(l1);
                         break;
                     case 10:
                         break;
@@ -106,12 +187,12 @@ namespace ConsoleApp31
                         break;
                 }
             } while (x != 10);
-            
+
         }
-    public class Stalker
+        public class Stalker
         {
             public string nickname;
-            private int hp=100;
+            private int hp = 100;
             public int money;
             public Weapon currentWeapon;
             private string fraction;
@@ -138,7 +219,7 @@ namespace ConsoleApp31
             public Weapon SetCurrentWeapon
             {
                 get { return currentWeapon; }
-                set { currentWeapon=value; }
+                set { currentWeapon = value; }
             }
             public string NameOfCurrentWeapon
             {
@@ -153,7 +234,8 @@ namespace ConsoleApp31
             protected int distance;
             protected int ammoLoad;
             protected int buyPrice;
-            public Weapon(string name,int damage, int accuracy, int distance,int ammoLoad, int buyPrice)
+            private int TilesMove = 2;
+            public Weapon(string name, int damage, int accuracy, int distance, int ammoLoad, int buyPrice)
             {
                 this.name = name;
                 this.damage = damage;
@@ -166,9 +248,60 @@ namespace ConsoleApp31
             {
                 get { return name; }
             }
+            public int Damage
+            {
+                get { return damage; }
+            }
+            public int Accuracy
+            {
+                get { return accuracy; }
+            }
+            public int Distance
+            {
+                get { return distance; }
+            }
+            public int AmmoLoad
+            {
+                get { return ammoLoad; }
+            }
             public int BuyPrice
             {
-                get { return buyPrice;}
+                get { return buyPrice; }
+            }
+        }
+        public class Enemy
+        {
+            private int health;
+            private int damage;
+            private int distanceAttack;
+            private int tilesMove;
+
+            public int Health
+            {
+                get { return health; }
+            }
+            public int Damage
+            {
+                get { return damage; }
+            }
+            public int DistanceAttack
+            {
+                get { return distanceAttack; }
+            }
+            public int TilesMove
+            {
+                get { return tilesMove; }
+            }
+            public Enemy(int health, int damage, int distanceAttack, int tilesMove)
+            {
+                this.health = health;
+                this.damage = damage;
+                this.distanceAttack = distanceAttack;
+                this.tilesMove = tilesMove;
+            }
+            public int SuccecfullHit(int damage)
+            {
+                return this.health -= damage;
             }
         }
        
